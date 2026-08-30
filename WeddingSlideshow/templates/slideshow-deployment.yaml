@@ -1,0 +1,77 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "wedding-slideshow.fullname" . }}-slideshow
+  labels:
+    {{- include "wedding-slideshow.labels" . | nindent 4 }}
+    app.kubernetes.io/name: {{ include "wedding-slideshow.fullname" . }}-slideshow
+    app.kubernetes.io/component: slideshow
+spec:
+  replicas: {{ .Values.slideshow.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "wedding-slideshow.fullname" . }}-slideshow
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "wedding-slideshow.fullname" . }}-slideshow
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: slideshow
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+      - name: slideshow
+        image: "{{ .Values.slideshow.image.repository }}:{{ .Values.slideshow.image.tag }}"
+        imagePullPolicy: {{ .Values.slideshow.image.pullPolicy }}
+        ports:
+        - name: http
+          containerPort: {{ .Values.slideshow.config.port }}
+        env:
+        - name: PORT
+          value: {{ .Values.slideshow.config.port | quote }}
+        - name: PHOTO_DIR
+          value: {{ .Values.slideshow.config.photoDir | quote }}
+        - name: SLIDESHOW_TITLE
+          value: {{ .Values.slideshow.config.title | quote }}
+        - name: SLIDESHOW_INTERVAL_SECONDS
+          value: {{ .Values.slideshow.config.intervalSeconds | quote }}
+        volumeMounts:
+        - name: photo-storage
+          mountPath: {{ .Values.slideshow.config.photoDir | quote }}
+          readOnly: true
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: http
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: http
+          initialDelaySeconds: 20
+          periodSeconds: 30
+        resources:
+          {{- toYaml .Values.slideshow.resources | nindent 10 }}
+      volumes:
+      - name: photo-storage
+        persistentVolumeClaim:
+          claimName: {{ include "wedding-slideshow.claimName" . }}
+      {{- with .Values.slideshow.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.slideshow.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.slideshow.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

@@ -1,0 +1,78 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "wedding-slideshow.fullname" . }}-upload
+  labels:
+    {{- include "wedding-slideshow.labels" . | nindent 4 }}
+    app.kubernetes.io/name: {{ include "wedding-slideshow.fullname" . }}-upload
+    app.kubernetes.io/component: upload
+spec:
+  replicas: {{ .Values.upload.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "wedding-slideshow.fullname" . }}-upload
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "wedding-slideshow.fullname" . }}-upload
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/component: upload
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      containers:
+      - name: upload
+        image: "{{ .Values.upload.image.repository }}:{{ .Values.upload.image.tag }}"
+        imagePullPolicy: {{ .Values.upload.image.pullPolicy }}
+        ports:
+        - name: http
+          containerPort: {{ .Values.upload.config.port }}
+        env:
+        - name: PORT
+          value: {{ .Values.upload.config.port | quote }}
+        - name: UPLOAD_DIR
+          value: {{ .Values.upload.config.uploadDir | quote }}
+        - name: MAX_FILE_SIZE_MB
+          value: {{ .Values.upload.config.maxFileSizeMb | quote }}
+        - name: MAX_FILES_PER_REQUEST
+          value: {{ .Values.upload.config.maxFilesPerRequest | quote }}
+        - name: SLIDESHOW_TITLE
+          value: {{ .Values.slideshow.config.title | quote }}
+        volumeMounts:
+        - name: photo-storage
+          mountPath: {{ .Values.upload.config.uploadDir | quote }}
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: http
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: http
+          initialDelaySeconds: 20
+          periodSeconds: 30
+        resources:
+          {{- toYaml .Values.upload.resources | nindent 10 }}
+      volumes:
+      - name: photo-storage
+        persistentVolumeClaim:
+          claimName: {{ include "wedding-slideshow.claimName" . }}
+      {{- with .Values.upload.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.upload.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.upload.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}

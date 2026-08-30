@@ -1,0 +1,18 @@
+{
+  "name": "wedding-photo-upload",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Photo upload page for the wedding slideshow pipeline.",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "check": "node --check src/server.js && node --check public/app.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1"
+  }
+}

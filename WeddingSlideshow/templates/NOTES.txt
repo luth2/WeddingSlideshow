@@ -1,0 +1,5 @@
+Upload service:
+  kubectl get service {{ include "wedding-slideshow.fullname" . }}-upload -n {{ .Release.Namespace }}
+
+Slideshow service:
+  kubectl get service {{ include "wedding-slideshow.fullname" . }}-slideshow -n {{ .Release.Namespace }}

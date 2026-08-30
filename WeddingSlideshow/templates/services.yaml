@@ -1,0 +1,35 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "wedding-slideshow.fullname" . }}-upload
+  labels:
+    {{- include "wedding-slideshow.labels" . | nindent 4 }}
+    app.kubernetes.io/component: upload
+spec:
+  type: {{ .Values.upload.service.type }}
+  selector:
+    app.kubernetes.io/name: {{ include "wedding-slideshow.fullname" . }}-upload
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  ports:
+  - name: http
+    protocol: TCP
+    port: {{ .Values.upload.service.port }}
+    targetPort: http
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "wedding-slideshow.fullname" . }}-slideshow
+  labels:
+    {{- include "wedding-slideshow.labels" . | nindent 4 }}
+    app.kubernetes.io/component: slideshow
+spec:
+  type: {{ .Values.slideshow.service.type }}
+  selector:
+    app.kubernetes.io/name: {{ include "wedding-slideshow.fullname" . }}-slideshow
+    app.kubernetes.io/instance: {{ .Release.Name }}
+  ports:
+  - name: http
+    protocol: TCP
+    port: {{ .Values.slideshow.service.port }}
+    targetPort: http

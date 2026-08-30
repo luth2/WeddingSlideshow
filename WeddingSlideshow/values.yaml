@@ -1,0 +1,68 @@
+nameOverride: ""
+fullnameOverride: ""
+
+imagePullSecrets: []
+
+persistence:
+  create: true
+  existingClaim: ""
+  keep: true
+  storageClass: azurefile-csi
+  accessModes:
+  - ReadWriteMany
+  size: 20Gi
+  annotations: {}
+
+podSecurityContext:
+  fsGroup: 10001
+  fsGroupChangePolicy: OnRootMismatch
+
+upload:
+  replicaCount: 1
+  image:
+    repository: ghcr.io/YOUR_GITHUB_USER/wedding-photo-upload
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: LoadBalancer
+    port: 80
+  config:
+    port: 8080
+    uploadDir: /data/uploads
+    maxFileSizeMb: 25
+    maxFilesPerRequest: 25
+  resources:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}
+
+slideshow:
+  replicaCount: 1
+  image:
+    repository: ghcr.io/YOUR_GITHUB_USER/wedding-web-slideshow
+    tag: latest
+    pullPolicy: IfNotPresent
+  service:
+    type: LoadBalancer
+    port: 80
+  config:
+    port: 8080
+    photoDir: /data/photos
+    title: Wedding Slideshow
+    intervalSeconds: 8
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      cpu: "1"
+      memory: 1Gi
+  nodeSelector: {}
+  tolerations: []
+  affinity: {}

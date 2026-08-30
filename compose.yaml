@@ -1,0 +1,32 @@
+services:
+  upload:
+    build:
+      context: ./Fotoupload_page
+    ports:
+    - "8080:8080"
+    environment:
+      PORT: "8080"
+      UPLOAD_DIR: /data/uploads
+      MAX_FILE_SIZE_MB: "25"
+      MAX_FILES_PER_REQUEST: "25"
+      SLIDESHOW_TITLE: ${SLIDESHOW_TITLE:-Wedding Slideshow}
+    volumes:
+    - wedding-photos:/data/uploads
+    restart: unless-stopped
+
+  slideshow:
+    build:
+      context: ./Web_Slideshow
+    ports:
+    - "8090:8080"
+    environment:
+      PORT: "8080"
+      PHOTO_DIR: /data/photos
+      SLIDESHOW_TITLE: ${SLIDESHOW_TITLE:-Wedding Slideshow}
+      SLIDESHOW_INTERVAL_SECONDS: ${SLIDESHOW_INTERVAL_SECONDS:-8}
+    volumes:
+    - wedding-photos:/data/photos:ro
+    restart: unless-stopped
+
+volumes:
+  wedding-photos:
