@@ -1,51 +1,38 @@
 # Web Slideshow
 
-Die Web Slideshow ersetzt den bildschirmgebundenen Raspberry-Pi-Player. Sie liest Bilder direkt aus demselben Ordner, in den der Upload-Service schreibt, und stellt die Diashow auf jedem aktuellen Browser bereit.
+The web slideshow reads images directly from the same shared directory used by the upload service and presents them in any modern browser.
 
-## Mit Docker Compose starten
+## Docker Compose
 
-Upload und Slideshow teilen sich dabei das Docker-Volume `wedding-photos`:
+From the repository root, run:
 
 ```bash
-SLIDESHOW_TITLE="Johanne und Lucas" docker compose up --build
+SLIDESHOW_TITLE="Our Wedding" docker compose up --build
 ```
 
-Danach stehen der Upload unter `http://localhost:8080` und die Slideshow unter `http://localhost:8090` bereit.
+The upload page is available at `http://localhost:8080` and the slideshow at `http://localhost:8090`.
 
-Alternativ kann der Container mit einem beliebigen lokalen Ordner gestartet werden:
+## Standalone Container
 
 ```bash
 docker build -t wedding-web-slideshow ./Web_Slideshow
 docker run --rm -p 8090:8080 \
-  -e SLIDESHOW_TITLE="Johanne und Lucas" \
+  -e SLIDESHOW_TITLE="Our Wedding" \
   -v "$PWD/photos:/data/photos:ro" \
   wedding-web-slideshow
 ```
 
-## Konfiguration
+## Configuration
 
-| Variable | Standard | Bedeutung |
+| Variable | Default | Description |
 | --- | --- | --- |
-| `PORT` | `8080` | HTTP-Port |
-| `PHOTO_DIR` | `/data/photos` | Gemeinsamer Fotoordner |
-| `SLIDESHOW_TITLE` | `Wedding Slideshow` | Titel in der Kopfzeile und im Browser-Tab |
-| `SLIDESHOW_INTERVAL_SECONDS` | `8` | Anzeigedauer pro Foto |
+| `PORT` | `8080` | HTTP server port |
+| `PHOTO_DIR` | `/data/photos` | Shared photo directory |
+| `SLIDESHOW_TITLE` | `Wedding Slideshow` | Page and browser tab title |
+| `SLIDESHOW_INTERVAL_SECONDS` | `8` | Display duration for each photo |
 
-HEIC- und HEIF-Dateien werden beim Abruf durch den Browser dynamisch als JPEG ausgeliefert. Die Slideshow benoetigt nur Lesezugriff auf den Fotoordner.
+HEIC and HEIF files are converted to JPEG when requested by the browser. The slideshow only requires read access to the photo directory.
 
 ## Kubernetes
 
-Upload und Slideshow mounten beide den bestehenden `wedding-photo-pvc`. Der Upload schreibt nach `/data/uploads`, waehrend die Slideshow denselben PVC unter `/data/photos` read-only liest. Der LoadBalancer-Service stellt die Slideshow auf Port 80 bereit.
-
-Vor dem Deployment muss `ghcr.io/YOUR_GITHUB_USER/wedding-web-slideshow:latest` in `slideshow-deployment.yaml` durch das gebaute Image ersetzt werden. Der sichtbare Titel wird dort mit `SLIDESHOW_TITLE` gesetzt.
-
-Wurde die aeltere Sync-Version bereits ausgerollt, muessen deren Ressourcen einmalig entfernt werden:
-
-```bash
-kubectl delete \
-  cronjob/wedding-photo-sync \
-  secret/onedrive-rclone-config \
-  pvc/wedding-slideshow-cache-pvc \
-  -n wedding-photos \
-  --ignore-not-found
-```
+Use the Helm chart in `WeddingSlideshow/`. The upload and slideshow deployments mount the same persistent volume claim, with the slideshow mount set to read-only.

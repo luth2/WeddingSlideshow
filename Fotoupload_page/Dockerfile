@@ -7,7 +7,7 @@ ENV NODE_ENV=production \
     UPLOAD_DIR=/data/uploads
 
 COPY package*.json ./
-RUN npm install --omit=dev
+RUN npm ci --omit=dev
 
 COPY public ./public
 COPY src ./src

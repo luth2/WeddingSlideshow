@@ -15,7 +15,7 @@ slideshow:
   image:
     repository: ghcr.io/OWNER/wedding-web-slideshow
   config:
-    title: Johanne und Lucas
+    title: Our Wedding
 ```
 
 Weitere wichtige Werte:

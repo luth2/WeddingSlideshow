@@ -20,7 +20,7 @@ podSecurityContext:
 upload:
   replicaCount: 1
   image:
-    repository: ghcr.io/YOUR_GITHUB_USER/wedding-photo-upload
+    repository: ghcr.io/luth2/wedding-photo-upload
     tag: latest
     pullPolicy: IfNotPresent
   service:
@@ -45,7 +45,7 @@ upload:
 slideshow:
   replicaCount: 1
   image:
-    repository: ghcr.io/YOUR_GITHUB_USER/wedding-web-slideshow
+    repository: ghcr.io/luth2/wedding-web-slideshow
     tag: latest
     pullPolicy: IfNotPresent
   service:
