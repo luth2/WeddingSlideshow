@@ -1,4 +1,4 @@
-FROM node:20-alpine
+FROM node:26-alpine
 
 LABEL org.opencontainers.image.licenses="GPL-3.0-only" \
     org.opencontainers.image.authors="https://github.com/luth2"
