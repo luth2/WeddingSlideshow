@@ -41,6 +41,15 @@ Guest browser -> Photo Upload -> Shared photo storage -> Web Slideshow -> Displa
 └── compose.yaml       # Local container deployment
 ```
 
+## Container Images
+
+Pushes to `main` automatically publish the affected container image to GitHub Container Registry:
+
+- `ghcr.io/luth2/wedding-photo-upload:latest`
+- `ghcr.io/luth2/wedding-web-slideshow:latest`
+
+Each build also receives an immutable `sha-*` tag and OCI metadata linking the package to this repository. Dependabot checks both npm projects, both Dockerfiles, and the GitHub Actions workflows weekly.
+
 ## Docker Compose
 
 ### Requirements

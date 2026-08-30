@@ -1,5 +1,8 @@
 FROM node:20-bookworm-slim
 
+LABEL org.opencontainers.image.licenses="GPL-3.0-only" \
+    org.opencontainers.image.authors="https://github.com/luth2"
+
 WORKDIR /app
 
 ENV NODE_ENV=production \

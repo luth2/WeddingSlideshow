@@ -1,0 +1,59 @@
+name: Publish web slideshow image
+run-name: Publish web slideshow image from ${{ github.ref_name }}
+on:
+  push:
+    branches:
+    - main
+    paths:
+    - Web_Slideshow/**
+    - .github/workflows/publish-web-slideshow.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: write
+
+concurrency:
+  group: publish-web-slideshow-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v4
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+    - name: Log in to GitHub Container Registry
+      uses: docker/login-action@v3
+      with:
+        registry: ghcr.io
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Generate image metadata
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ghcr.io/${{ github.repository_owner }}/wedding-web-slideshow
+        tags: |
+          type=raw,value=latest,enable={{is_default_branch}}
+          type=sha,prefix=sha-
+        labels: |
+          org.opencontainers.image.source=https://github.com/${{ github.repository }}
+          org.opencontainers.image.description=Browser-based slideshow for Wedding Slideshow
+          org.opencontainers.image.licenses=GPL-3.0-only
+          org.opencontainers.image.authors=https://github.com/luth2
+
+    - name: Build and push image
+      uses: docker/build-push-action@v6
+      with:
+        context: ./Web_Slideshow
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
