@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#111310">
+    <title>Wedding Slideshow</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <main class="slideshow" aria-live="polite">
+      <div class="image-stage" aria-hidden="true">
+        <img class="slide is-visible" alt="">
+        <img class="slide" alt="">
+      </div>
+      <div class="vignette" aria-hidden="true"></div>
+
+      <header class="topbar">
+        <div class="wordmark">
+          <h1 data-slideshow-title></h1>
+        </div>
+        <span class="counter" hidden></span>
+      </header>
+
+      <section class="empty-state">
+        <span class="empty-mark" data-slideshow-title></span>
+        <p>Preparing photos</p>
+      </section>
+
+      <div class="status" role="status" hidden></div>
+
+      <footer class="controls">
+        <button class="icon-button" type="button" data-action="previous" aria-label="Previous photo" title="Previous photo">
+          <span aria-hidden="true">←</span>
+        </button>
+        <button class="icon-button primary" type="button" data-action="toggle" aria-label="Pause slideshow" title="Pause slideshow">
+          <span class="pause-icon" aria-hidden="true"></span>
+        </button>
+        <button class="icon-button" type="button" data-action="next" aria-label="Next photo" title="Next photo">
+          <span aria-hidden="true">→</span>
+        </button>
+        <span class="control-divider" aria-hidden="true"></span>
+        <button class="icon-button" type="button" data-action="fullscreen" aria-label="Enter fullscreen" title="Enter fullscreen">
+          <span class="fullscreen-icon" aria-hidden="true"></span>
+        </button>
+        <div class="progress" aria-hidden="true"><span></span></div>
+      </footer>
+    </main>
+    <script src="/app.js" defer></script>
+  </body>
+</html>
