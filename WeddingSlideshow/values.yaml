@@ -21,7 +21,7 @@ upload:
   replicaCount: 1
   image:
     repository: ghcr.io/luth2/wedding-photo-upload
-    tag: latest
+    tag: ""
     pullPolicy: IfNotPresent
   service:
     type: LoadBalancer
@@ -46,7 +46,7 @@ slideshow:
   replicaCount: 1
   image:
     repository: ghcr.io/luth2/wedding-web-slideshow
-    tag: latest
+    tag: ""
     pullPolicy: IfNotPresent
   service:
     type: LoadBalancer

@@ -1,0 +1,142 @@
+name: Semantic release
+"on":
+  push:
+    branches:
+    - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  packages: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: semantic-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    outputs:
+      released: ${{ steps.version.outputs.released }}
+      tag: ${{ steps.version.outputs.tag }}
+      version: ${{ steps.version.outputs.version }}
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v7
+      with:
+        fetch-depth: 0
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v6
+      with:
+        node-version: 24
+        cache: npm
+
+    - name: Install release dependencies
+      run: npm ci --ignore-scripts
+
+    - name: Create GitHub release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: npm run release
+
+    - name: Resolve released version
+      id: version
+      shell: bash
+      run: |
+        tag="$(git tag --points-at "$GITHUB_SHA" --list 'v[0-9]*' | sort -V | tail -n 1)"
+        if [[ -z "$tag" ]]; then
+          echo "released=false" >> "$GITHUB_OUTPUT"
+          exit 0
+        fi
+        echo "released=true" >> "$GITHUB_OUTPUT"
+        echo "tag=$tag" >> "$GITHUB_OUTPUT"
+        echo "version=${tag#v}" >> "$GITHUB_OUTPUT"
+
+  publish-photo-upload:
+    needs: release
+    if: needs.release.outputs.released == 'true'
+    uses: ./.github/workflows/publish-photo-upload.yml
+    with:
+      version: ${{ needs.release.outputs.version }}
+    secrets: inherit
+
+  publish-web-slideshow:
+    needs: release
+    if: needs.release.outputs.released == 'true'
+    uses: ./.github/workflows/publish-web-slideshow.yml
+    with:
+      version: ${{ needs.release.outputs.version }}
+    secrets: inherit
+
+  package-chart:
+    needs:
+    - release
+    - publish-photo-upload
+    - publish-web-slideshow
+    if: needs.release.outputs.released == 'true'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v7
+
+    - name: Set up Helm
+      uses: azure/setup-helm@v4
+
+    - name: Validate chart
+      env:
+        VERSION: ${{ needs.release.outputs.version }}
+      run: |
+        helm lint ./WeddingSlideshow --set upload.image.tag="$VERSION" --set slideshow.image.tag="$VERSION"
+        helm template wedding-slideshow ./WeddingSlideshow \
+          --namespace wedding-photos \
+          --set upload.image.tag="$VERSION" \
+          --set slideshow.image.tag="$VERSION" > /dev/null
+
+    - name: Package chart repository
+      env:
+        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        RELEASE_TAG: ${{ needs.release.outputs.tag }}
+        VERSION: ${{ needs.release.outputs.version }}
+      shell: bash
+      run: |
+        mkdir -p _site
+        while IFS= read -r tag; do
+          gh release download "$tag" \
+            --pattern 'wedding-slideshow-*.tgz' \
+            --dir _site \
+            --clobber || true
+        done < <(gh release list --limit 1000 --json tagName --jq '.[].tagName')
+        rm -f "_site/wedding-slideshow-${VERSION}.tgz"
+        helm package ./WeddingSlideshow \
+          --version "$VERSION" \
+          --app-version "$VERSION" \
+          --destination _site
+        gh release upload "$RELEASE_TAG" \
+          "_site/wedding-slideshow-${VERSION}.tgz" \
+          --clobber
+        helm repo index _site --url https://luth2.github.io/WeddingSlideshow
+        cp docs/index.html docs/styles.css README.md _site/
+
+    - name: Configure GitHub Pages
+      uses: actions/configure-pages@v5
+
+    - name: Upload Pages artifact
+      uses: actions/upload-pages-artifact@v3
+      with:
+        path: _site
+
+  deploy-pages:
+    needs: package-chart
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+    - name: Deploy to GitHub Pages
+      id: deployment
+      uses: actions/deploy-pages@v4

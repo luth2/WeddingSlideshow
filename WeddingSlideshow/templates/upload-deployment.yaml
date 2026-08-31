@@ -27,7 +27,7 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
       - name: upload
-        image: "{{ .Values.upload.image.repository }}:{{ .Values.upload.image.tag }}"
+        image: "{{ .Values.upload.image.repository }}:{{ .Values.upload.image.tag | default .Chart.AppVersion }}"
         imagePullPolicy: {{ .Values.upload.image.pullPolicy }}
         ports:
         - name: http

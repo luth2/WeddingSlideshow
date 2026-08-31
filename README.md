@@ -43,12 +43,12 @@ Guest browser -> Photo Upload -> Shared photo storage -> Web Slideshow -> Displa
 
 ## Container Images
 
-Pushes to `main` automatically publish the affected container image to GitHub Container Registry:
+Releases publish both container images to GitHub Container Registry:
 
 - `ghcr.io/luth2/wedding-photo-upload:latest`
 - `ghcr.io/luth2/wedding-web-slideshow:latest`
 
-Each build also receives an immutable `sha-*` tag and OCI metadata linking the package to this repository. Dependabot checks both npm projects, both Dockerfiles, and the GitHub Actions workflows weekly.
+Each release receives the full semantic version, minor, major, `latest`, and immutable commit tags. For release `v1.2.3`, these are `1.2.3`, `1.2`, `1`, `latest`, and `sha-*`. OCI metadata links each package to this repository. Dependabot checks the release tooling, both npm applications, both Dockerfiles, and the GitHub Actions workflows weekly.
 
 Each published container is scanned with Anchore Syft. Its SPDX JSON SBOM is available as a workflow artifact and is submitted to the GitHub Dependency Graph for visibility under the repository's Security insights.
 
@@ -107,6 +107,8 @@ helm upgrade --install wedding-slideshow wedding-slideshow/wedding-slideshow \
 ```
 
 Chart documentation and the repository index are published at <https://luth2.github.io/WeddingSlideshow>.
+
+Release charts use the same semantic version as both container images. Unless overridden, the chart deploys the image tag from its `appVersion`.
 
 ### Install from Source
 
@@ -202,6 +204,17 @@ npm --prefix Fotoupload_page run check
 npm --prefix Web_Slideshow install
 npm --prefix Web_Slideshow run check
 ```
+
+## Releases
+
+Releases are generated automatically from Conventional Commit messages when changes reach `main`. Use squash merging and format the pull request title as one of the following:
+
+- `feat: add a new capability` creates a minor release.
+- `fix: correct existing behavior` creates a patch release.
+- `feat!: introduce a breaking change` creates a major release.
+- `docs: update documentation` does not create a release.
+
+The release workflow creates a `v*` Git tag and GitHub Release, publishes both versioned container images, packages the Helm chart with the same version, attaches it to the GitHub Release, and updates the Helm repository on GitHub Pages. Pull request titles are validated automatically.
 
 ## License
 

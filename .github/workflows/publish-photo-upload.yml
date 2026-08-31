@@ -1,13 +1,12 @@
 name: Publish photo upload image
 
 on:
-  push:
-    branches:
-    - main
-    paths:
-    - Fotoupload_page/**
-    - .github/workflows/publish-photo-upload.yml
-  workflow_dispatch:
+  workflow_call:
+    inputs:
+      version:
+        description: Semantic version to publish
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -40,8 +39,11 @@ jobs:
       with:
         images: ghcr.io/${{ github.repository_owner }}/wedding-photo-upload
         tags: |
-          type=raw,value=latest,enable={{is_default_branch}}
+          type=raw,value=latest
           type=sha,prefix=sha-
+          type=semver,pattern={{version}},value=${{ inputs.version }},enable=${{ inputs.version != '' }}
+          type=semver,pattern={{major}}.{{minor}},value=${{ inputs.version }},enable=${{ inputs.version != '' }}
+          type=semver,pattern={{major}},value=${{ inputs.version }},enable=${{ inputs.version != '' }}
         labels: |
           org.opencontainers.image.source=https://github.com/${{ github.repository }}
           org.opencontainers.image.description=Photo upload service for Wedding Slideshow
