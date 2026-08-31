@@ -2,6 +2,7 @@ apiVersion: v2
 name: wedding-slideshow
 description: Upload service and browser-based wedding photo slideshow
 home: https://github.com/luth2/WeddingSlideshow
+icon: https://luth2.github.io/WeddingSlideshow/logo.png
 sources:
 - https://github.com/luth2/WeddingSlideshow
 

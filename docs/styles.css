@@ -28,8 +28,24 @@ header {
   border-bottom: 1px solid #aab4a4;
 }
 
+.brand {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.brand img {
+  display: block;
+  width: 160px;
+  height: 160px;
+  border-radius: 8px;
+  object-fit: cover;
+}
+
 .eyebrow {
-  margin: 0 0 12px;
+  margin: 0;
   color: #52644f;
   font-family: ui-monospace, monospace;
   font-size: 12px;
@@ -121,5 +137,14 @@ code {
 
   h1 {
     font-size: 52px;
+  }
+
+  .brand {
+    align-items: start;
+  }
+
+  .brand img {
+    width: 112px;
+    height: 112px;
   }
 }
