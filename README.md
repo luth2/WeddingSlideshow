@@ -50,6 +50,8 @@ Pushes to `main` automatically publish the affected container image to GitHub Co
 
 Each build also receives an immutable `sha-*` tag and OCI metadata linking the package to this repository. Dependabot checks both npm projects, both Dockerfiles, and the GitHub Actions workflows weekly.
 
+Each published container is scanned with Anchore Syft. Its SPDX JSON SBOM is available as a workflow artifact and is submitted to the GitHub Dependency Graph for visibility under the repository's Security insights.
+
 ## Docker Compose
 
 ### Requirements

@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
   packages: write
 
 concurrency:
@@ -49,6 +49,7 @@ jobs:
           org.opencontainers.image.authors=https://github.com/luth2
 
     - name: Build and push image
+      id: build
       uses: docker/build-push-action@v7
       with:
         context: ./Fotoupload_page
@@ -57,3 +58,15 @@ jobs:
         labels: ${{ steps.meta.outputs.labels }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
+
+    - name: Generate and submit SBOM
+      uses: anchore/sbom-action@v0
+      with:
+        image: ghcr.io/${{ github.repository_owner }}/wedding-photo-upload@${{ steps.build.outputs.digest }}
+        format: spdx-json
+        output-file: wedding-photo-upload.spdx.json
+        artifact-name: wedding-photo-upload-sbom.spdx.json
+        dependency-snapshot: true
+        registry-username: ${{ github.actor }}
+        registry-password: ${{ secrets.GITHUB_TOKEN }}
+        github-token: ${{ secrets.GITHUB_TOKEN }}
