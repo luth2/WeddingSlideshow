@@ -1,0 +1,53 @@
+name: Security issue
+description: Report a non-sensitive security concern or hardening suggestion.
+title: "[Security]: "
+labels:
+- security
+body:
+- type: markdown
+  attributes:
+    value: |
+      Do not disclose vulnerabilities, exploits, credentials, or sensitive details in a public issue.
+      Report sensitive findings privately at https://github.com/luth2/WeddingSlideshow/security/advisories/new.
+
+- type: checkboxes
+  id: public-safe
+  attributes:
+    label: Public disclosure confirmation
+    options:
+    - label: This report contains no exploit details, credentials, personal data, or other sensitive information.
+      required: true
+
+- type: dropdown
+  id: category
+  attributes:
+    label: Category
+    options:
+    - Security hardening
+    - Dependency concern
+    - Container configuration
+    - Kubernetes or Helm configuration
+    - Documentation
+    - Other non-sensitive concern
+  validations:
+    required: true
+
+- type: textarea
+  id: summary
+  attributes:
+    label: Non-sensitive summary
+    description: Describe the concern without including instructions for exploitation or confidential details.
+  validations:
+    required: true
+
+- type: textarea
+  id: recommendation
+  attributes:
+    label: Suggested mitigation
+    description: Describe a defensive improvement or expected secure behavior.
+
+- type: textarea
+  id: context
+  attributes:
+    label: Additional public context
+    description: Include only information that is safe to disclose publicly.

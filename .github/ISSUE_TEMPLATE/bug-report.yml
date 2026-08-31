@@ -1,0 +1,70 @@
+name: Bug report
+description: Report reproducible incorrect behavior.
+title: "[Bug]: "
+labels:
+- bug
+body:
+- type: markdown
+  attributes:
+    value: Please provide enough detail to reproduce the problem. Do not include credentials or other secrets.
+
+- type: dropdown
+  id: component
+  attributes:
+    label: Affected component
+    options:
+    - Photo upload
+    - Web slideshow
+    - Docker Compose
+    - Helm chart
+    - GitHub Actions
+    - Documentation
+    - Other
+  validations:
+    required: true
+
+- type: textarea
+  id: description
+  attributes:
+    label: Description
+    description: Clearly describe what went wrong.
+  validations:
+    required: true
+
+- type: textarea
+  id: reproduce
+  attributes:
+    label: Steps to reproduce
+    placeholder: |
+      1. Start ...
+      2. Open ...
+      3. Observe ...
+  validations:
+    required: true
+
+- type: textarea
+  id: expected
+  attributes:
+    label: Expected behavior
+  validations:
+    required: true
+
+- type: textarea
+  id: environment
+  attributes:
+    label: Environment
+    description: Include relevant versions, deployment method, browser, operating system, and Kubernetes distribution.
+    placeholder: |
+      Deployment: Docker Compose or Helm
+      Version or image tag:
+      Browser:
+      Operating system:
+  validations:
+    required: true
+
+- type: textarea
+  id: logs
+  attributes:
+    label: Logs and additional context
+    description: Paste relevant sanitized logs or screenshots. Remove tokens, credentials, and personal data.
+    render: shell

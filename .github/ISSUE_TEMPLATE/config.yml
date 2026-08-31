@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+- name: Report a vulnerability privately
+  url: https://github.com/luth2/WeddingSlideshow/security/advisories/new
+  about: Use private vulnerability reporting for sensitive security findings.

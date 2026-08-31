@@ -1,0 +1,53 @@
+name: Feature request
+description: Suggest an improvement or a new capability.
+title: "[Feature]: "
+labels:
+- enhancement
+body:
+- type: markdown
+  attributes:
+    value: Thanks for helping improve Wedding Slideshow.
+
+- type: textarea
+  id: problem
+  attributes:
+    label: Problem or use case
+    description: What problem would this feature solve, and who would benefit?
+    placeholder: Describe the current limitation or use case.
+  validations:
+    required: true
+
+- type: textarea
+  id: solution
+  attributes:
+    label: Proposed solution
+    description: Describe the behavior you would like to see.
+  validations:
+    required: true
+
+- type: textarea
+  id: alternatives
+  attributes:
+    label: Alternatives considered
+    description: Describe any workarounds or alternative approaches you considered.
+
+- type: dropdown
+  id: component
+  attributes:
+    label: Affected component
+    options:
+    - Photo upload
+    - Web slideshow
+    - Docker Compose
+    - Helm chart
+    - GitHub Actions
+    - Documentation
+    - Other
+  validations:
+    required: true
+
+- type: textarea
+  id: context
+  attributes:
+    label: Additional context
+    description: Add mockups, examples, or other useful information.

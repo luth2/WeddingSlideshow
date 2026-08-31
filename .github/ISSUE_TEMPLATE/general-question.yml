@@ -1,0 +1,44 @@
+name: General question
+description: Ask about setup, configuration, usage, or the project direction.
+title: "[Question]: "
+labels:
+- question
+body:
+- type: markdown
+  attributes:
+    value: Check the README and Helm documentation first; they may already contain the answer.
+
+- type: dropdown
+  id: topic
+  attributes:
+    label: Topic
+    options:
+    - Photo upload
+    - Web slideshow
+    - Docker Compose
+    - Helm or Kubernetes
+    - Container images
+    - Contributing
+    - Other
+  validations:
+    required: true
+
+- type: textarea
+  id: question
+  attributes:
+    label: Question
+    description: What would you like to know?
+  validations:
+    required: true
+
+- type: textarea
+  id: attempted
+  attributes:
+    label: What have you tried?
+    description: For setup or usage questions, describe what you already attempted and what happened.
+
+- type: textarea
+  id: context
+  attributes:
+    label: Additional context
+    description: Include relevant versions or sanitized configuration. Do not include credentials or personal data.
