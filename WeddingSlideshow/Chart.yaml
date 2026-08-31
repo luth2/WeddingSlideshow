@@ -1,6 +1,9 @@
 apiVersion: v2
 name: wedding-slideshow
 description: Upload service and browser-based wedding photo slideshow
+home: https://github.com/luth2/WeddingSlideshow
+sources:
+- https://github.com/luth2/WeddingSlideshow
 
 # A chart can be either an 'application' or a 'library' chart.
 #

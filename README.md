@@ -94,6 +94,20 @@ This keeps the photo volume. To remove the volume and all uploaded photos, run `
 - A storage class supporting the configured access mode
 - Published upload and slideshow container images
 
+### Install from the Helm Repository
+
+```bash
+helm repo add wedding-slideshow https://luth2.github.io/WeddingSlideshow
+helm repo update
+helm upgrade --install wedding-slideshow wedding-slideshow/wedding-slideshow \
+  --namespace wedding-photos \
+  --create-namespace
+```
+
+Chart documentation and the repository index are published at <https://luth2.github.io/WeddingSlideshow>.
+
+### Install from Source
+
 Update the image repositories and storage class in `WeddingSlideshow/values.yaml`:
 
 ```yaml
